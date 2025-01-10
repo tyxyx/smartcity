@@ -4,7 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32x32.png">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./img/favicon-32x32.png"
+    />
 
     <title>Ollama</title>
 
@@ -87,12 +92,22 @@
             <div class="row justify-content-center">
               <div class="col-md-8">
                 <div class="user-type-container">
-                  <strong id="app">App</strong>
+                  <strong id="app">ChatBot</strong>
                 </div>
               </div>
             </div>
-            <div id="formContainer" class="row justify-content-center">
+            <div
+              id="formContainer"
+              class="row justify-content-center fixed-bottom"
+            >
               <!--insert chat here -->
+              <textarea
+                class="form-control"
+                id="exampleFormControlTextarea1"
+                rows="3"
+                placeholder="Enter a message..."
+              ></textarea>
+              <button class="btn btn-primary" type="submit">Send</button>
             </div>
           </div>
         </div>
