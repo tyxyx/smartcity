@@ -1,18 +1,29 @@
-import ollama from "ollama";
+const axios = require("axios");
 
-document.addEventListener("DOMContentLoaded", function () {
-    generateForm();
-});
+async function queryOllama(prompt) {
+    try{
+        const response = await axios.post("http://localhost:11434/api/generate", {
+            model: "granite3.1-dense:8b",
+            prompt: prompt
+        });
+        
+        let fullResponse = '';
+        const chunks = response.data.split('\n');
 
-
-function generateForm() {
-  
+        chunks.forEach(chunk => {
+            if(chunk) {
+                const jsonChunk = JSON.parse(chunk);
+                fullResponse += jsonChunk.response;
+            }
+        })
+        return fullResponse
+    }catch (error) {
+        console.error("Error querying Ollama:", error);
+    }
 }
 
-async function generateResponse() {
-    const response = await ollama.chat({
-    model: 'llama3.1',
-    messages: [{ role: 'user', content: 'Why is the sky blue?' }],
-    })
-console.log(response.message.content)
-}
+(async () => {
+    const prompt = "What is the capital of France?";
+    const response = await queryOllama(prompt);
+    console.log("Response from Ollama:", response);
+})();
