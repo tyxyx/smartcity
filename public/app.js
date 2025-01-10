@@ -22,8 +22,22 @@ async function queryOllama(prompt) {
     }
 }
 
+async function generateEmbed(prompt) {
+    try{
+        const response = await axios.post("http://localhost:11434/api/embed", {
+            model: "granite3.1-dense:8b",
+            input: prompt
+        });
+
+        return response.data
+    }catch (error) {
+        console.error("Error generating Embed Ollama:", error);
+    }
+}
+
 (async () => {
     const prompt = "What is the capital of France?";
     const response = await queryOllama(prompt);
-    console.log("Response from Ollama:", response);
+    const embed = await generateEmbed(prompt);
+    console.log("Response from Ollama:", embed);
 })();
