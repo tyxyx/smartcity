@@ -97,6 +97,6 @@ function chunkText(text, maxChunkSize = 300){
     // const prompt = "What is the capital of France?";
     // const response = await queryOllama(prompt);
     // const embed = await generateEmbed(prompt);
-    // console.log("Response from Ollama:", embed);
+    // console.log("Response from Ollama:", response);
 
 })();
