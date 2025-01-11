@@ -21,8 +21,9 @@
 
     <!-- Custom CSS -->
     <style>
+
       #chatbox {
-        height: 500px;
+        height: 60vh; 
         overflow-y: auto;
         list-style-type: none;
         padding: 10px;
@@ -31,16 +32,14 @@
         gap: 10px;
       }
 
+      @media (max-height: 375px) {
+        #chatbox {
+          height: 60vh; /* Adjust height when the viewport is less than 375px */
+        }
+      }
+
       #chatbox::-webkit-scrollbar {
-        width: 5px;
-      }
-
-      #chatbox::-webkit-scrollbar-track {
-        background-color: lightgray;
-      }
-
-      #chatbox::-webkit-scrollbar-thumb {
-        background-color: rgb(179, 175, 175);
+        width: 0px;
       }
 
       .chat-outgoing {
@@ -125,8 +124,7 @@
       }
 
       #formContainer {
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 15px;
+        background: rgb(255, 255, 255);
         padding: 2rem;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       }
@@ -173,7 +171,7 @@
               <!-- Chat messages will appear here -->
             </ul>
 
-            <div id="formContainer" class="input-group mb-3 fixed-bottom">
+            <div id="formContainer" class="input-group fixed-bottom">
               <!-- User input field and send button -->
               <input
                 id="user-input"
