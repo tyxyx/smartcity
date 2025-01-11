@@ -1,20 +1,17 @@
-# query_ai.py
 import requests
 import chromadb
-import re
 from ollama import chat
 from ollama import ChatResponse
-
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+app = Flask(__name__)
+CORS(app)
 OLLAMA_MODEL = "aisingapore/llama3-8b-cpt-sea-lionv2-instruct"
+
 # Function to query Ollama model for responses
-def query_ollama(prompt):
+def query_ollama(messages):
     try:
-        response: ChatResponse = chat(model=OLLAMA_MODEL, messages=[
-            {
-                'role': 'user',
-                'content': prompt,
-            },
-        ])
+        response: ChatResponse = chat(model=OLLAMA_MODEL, messages=messages)
         return response.message.content
     except Exception as e:
         print(f"Error querying Ollama: {e}")
@@ -45,25 +42,49 @@ def query_chromadb(query, top_n=5):
     combined_documents = " ".join([doc for sublist in results['documents'] for doc in sublist])
     
     return combined_documents
+
 # Function to generate the response from the LLaMA model
-def generate_response_from_context(context, query):
-    prompt = f"You are an AI assistant designed to help users identify relevant policies or improve their suggested policies. If the user asks about an existing policy, your first step is to provide them with a summary of any relevant, existing policies that align with their inquiry.Context:\n\n{context}\n\n, If no policy exists or if the existing policy doesn't fully meet the user's needs, you will guide them through refining and improving their suggested policy by asking clarifying questions and offering suggestions.Your goal is to help the user develop a policy suggestion that is clear, actionable, and well-structured. Once the policy is in a reasonable form, inform the user that they can go to reach.sg to submit their suggestion. Aim to provide useful information and actionable steps. If at any time you are unsure about a policy or its details, ask the user for more specifics. User Suggestion:\n\n{query}\n\n, give your answer in the context where you are directly talking to the user as an AI chatbot"
+def generate_response_from_context(context, query, conversation_history):
+    prompt = f"You are an AI assistant designed to help users identify relevant policies or improve their suggested policies. If the user asks about an existing policy, your first step is to provide them with a summary of any relevant, existing policies that align with their inquiry. Context:\n\n{context}\n\nIf no policy exists or if the existing policy doesn't fully meet the user's needs, you will guide them through refining and improving their suggested policy by asking clarifying questions and offering suggestions. Your goal is to help the user develop a policy suggestion that is clear, actionable, and well-structured. Once the policy is in a reasonable form, inform the user that they can go to reach.sg to submit their suggestion. Aim to provide useful information and actionable steps. If at any time you are unsure about a policy or its details, ask the user for more specifics.\n\n"
 
-    return query_ollama(prompt)
-
-def answer_question(query):
-    # Retrieve relevant documents based on the query
-    relevant_chunks = query_chromadb(query)
+    # Add the entire conversation history to the prompt
+    prompt += "Conversation History:\n"
+    for message in conversation_history:
+        prompt += f"{message['role']}: {message['content']}\n"
     
+    # Add user input
+    prompt += f"User Suggestion: {query}\n"
+
+    return query_ollama([
+        {'role': 'system', 'content': prompt},
+        {'role': 'user', 'content': query},
+    ])
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    # Parse incoming JSON request
+    data = request.json
+    user_query = data.get('query')
+    conversation_history = data.get('history', [])
+
+    # Retrieve relevant documents based on the query
+    relevant_chunks = query_chromadb(user_query)
+
     # Combine the relevant chunks into a single context
     context = " ".join(relevant_chunks)
 
-    # Use the context to generate a response from the model
-    response = generate_response_from_context(context, query)
+    # Generate the AI's response
+    response = generate_response_from_context(context, user_query, conversation_history)
 
-    print(response)
+    # Update conversation history with user and assistant messages
+    conversation_history.append({'role': 'user', 'content': user_query})
+    conversation_history.append({'role': 'assistant', 'content': response})
 
-# Main function to prompt the AI with a query
-if __name__ == "__main__":
-    user_query = "I think Singapore should implement some data protection policies to prevent business from stealing/misusing other people's data"
-    answer_question(user_query)
+    # Return the AI's response and updated history as a JSON object
+    return jsonify({
+        'response': response,
+        'history': conversation_history
+    })
+
+if __name__ == '__main__':
+    app.run(debug=True)
