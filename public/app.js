@@ -1,5 +1,3 @@
-console.log("test");
-
 const axios = require("axios");
 const fs = require("fs");
 const pdf = require("pdf-parse");

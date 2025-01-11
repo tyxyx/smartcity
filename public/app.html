@@ -96,18 +96,22 @@
                 </div>
               </div>
             </div>
-            <div
-              id="formContainer"
-              class="row justify-content-center fixed-bottom"
-            >
+
+            <div>
               <!--insert chat here -->
-              <textarea
+            </div>
+
+            <div id="formContainer" class="input-group mb-3 fixed-bottom">
+              <!-- input message here -->
+              <input
+                type="text"
                 class="form-control"
-                id="exampleFormControlTextarea1"
-                rows="3"
+                aria-describedby="button-addon2"
                 placeholder="Enter a message..."
-              ></textarea>
-              <button class="btn btn-primary" type="submit">Send</button>
+              />
+              <button class="btn btn-primary" type="button" id="button-addon2">
+                Send
+              </button>
             </div>
           </div>
         </div>
