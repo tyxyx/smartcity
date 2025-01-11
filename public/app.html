@@ -99,6 +99,7 @@
 
             <div id="chatbox">
               <!--insert chat here -->
+              <i class="bi bi-chat-right-fill"></i>
             </div>
 
             <div id="formContainer" class="input-group mb-3 fixed-bottom">
@@ -181,11 +182,9 @@
         chatInput.value = "";
 
         // Simulate the "Thinking..." response after a short delay
-        setTimeout(function () {
-          var thinkingMessage = createChatLi("Thinking...", "chat-incoming");
-          chatbox.appendChild(thinkingMessage);
-          chatbox.scrollTo(0, chatbox.scrollHeight);
-        }, 600);
+        var thinkingMessage = createChatLi("Thinking...", "chat-incoming");
+        chatbox.appendChild(thinkingMessage);
+        chatbox.scrollTo(0, chatbox.scrollHeight);
       }
 
       // Add event listener for the Send button click
