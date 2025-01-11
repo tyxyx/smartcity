@@ -5,13 +5,18 @@ import re
 from ollama import chat
 from ollama import ChatResponse
 
-OLLAMA_MODEL = "llama3.2"
+OLLAMA_MODEL = "u1i/sea-lion"
 
+# def clear_chromadb():
+#     client = chromadb.PersistentClient(path="/path/to/save/to")
+#     client.delete_collection(name="my_collection")
+
+# clear_chromadb()
 # Function to query Ollama model for responses
 def query_ollama(prompt):
     try:
         
-        response: ChatResponse = chat(model='llama3.2', messages=[
+        response: ChatResponse = chat(model=OLLAMA_MODEL, messages=[
             {
                 'role': 'user',
                 'content': prompt,
@@ -73,9 +78,11 @@ def chunk_text(text, max_chunk_size=500):
     
     return chunks
 
+
+
 # Function to store embeddings in ChromaDB
 def store_embeddings_in_chromadb(embedded_chunks):
-    client = chromadb.Client()
+    client = chromadb.PersistentClient(path="/path/to/save/to")
     collection = client.get_or_create_collection(name="my_collection", embedding_function=None)
     
     for index, emb in enumerate(embedded_chunks):
@@ -115,38 +122,9 @@ def process_pdf(file_path):
     print("All embeddings have been added to ChromaDB.")
 
 
-# Function to retrieve relevant embeddings from ChromaDB based on a query
-def query_chromadb(query, top_n=1):
-    client = chromadb.Client()
-    collection = client.get_or_create_collection(name="my_collection")
-    
-    # Search for relevant documents in ChromaDB
-    results = collection.query(query_embeddings=query, n_results=top_n)
-    return results['documents']
-
-# Function to generate the response from the LLaMA model
-def generate_response_from_context(context,query):
-    # Combine the context into a single prompt for the model
-    prompt = f"Based on the following context, context:\n\n{context}\n\n, Answer the question:\n\n{query}\n\n, Answer:"
-    return query_ollama(prompt)
-
-def answer_question(query):
-    # Retrieve relevant documents based on the query
-    relevant_chunks = query_chromadb(generate_embed(query)["embeddings"][0])[0]
-    # Combine the relevant chunks into a single context
-    context = " ".join(relevant_chunks)
-
-    # Use the context to generate a response from the model
-    response = generate_response_from_context(context,query)
-
-    print("Answer from LLaMA model:")
-    print(response)
-
-
 
 # Run the process on a sample PDF
 if __name__ == "__main__":
     pdf_file_path = './doc/government-data-security-policies.pdf'
     process_pdf(pdf_file_path)
-    user_query = "What are the data security policies mentioned in the document?"
-    answer_question(user_query)
+    
