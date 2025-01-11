@@ -2,28 +2,24 @@ import requests
 import PyPDF2
 import chromadb
 import re
-
+from ollama import chat
+from ollama import ChatResponse
 
 OLLAMA_MODEL = "llama3.2"
 
 # Function to query Ollama model for responses
 def query_ollama(prompt):
     try:
-        # Send the prompt to the Ollama model
         
-        response = requests.post("http://localhost:11434/api/generate", json={
-            "model": OLLAMA_MODEL,
-            "prompt": prompt
-        })
-
-        # Check if the response is in JSON format
-        response.raise_for_status()  # Ensure no HTTP error occurred
-        response_json = response.json()  # Parse the response JSON
+        response: ChatResponse = chat(model='llama3.2', messages=[
+            {
+                'role': 'user',
+                'content': prompt,
+            },
+])
+        response=response.message.content
         
-        # Extract the 'response' key from the JSON
-        full_response = response_json.get("response", "")
-
-        return full_response
+        return response
 
     except Exception as e:
         print(f"Error querying Ollama: {e}")
@@ -129,19 +125,19 @@ def query_chromadb(query, top_n=1):
     return results['documents']
 
 # Function to generate the response from the LLaMA model
-def generate_response_from_context(context):
+def generate_response_from_context(context,query):
     # Combine the context into a single prompt for the model
-    prompt = f"Based on the following context, answer the question:\n\n{context}\n\nAnswer:"
+    prompt = f"Based on the following context, context:\n\n{context}\n\n, Answer the question:\n\n{query}\n\n, Answer:"
     return query_ollama(prompt)
 
-def answer_question(query, file_path):
+def answer_question(query):
     # Retrieve relevant documents based on the query
     relevant_chunks = query_chromadb(generate_embed(query)["embeddings"][0])[0]
     # Combine the relevant chunks into a single context
     context = " ".join(relevant_chunks)
 
     # Use the context to generate a response from the model
-    response = generate_response_from_context(context)
+    response = generate_response_from_context(context,query)
 
     print("Answer from LLaMA model:")
     print(response)
@@ -153,4 +149,4 @@ if __name__ == "__main__":
     pdf_file_path = './doc/government-data-security-policies.pdf'
     process_pdf(pdf_file_path)
     user_query = "What are the data security policies mentioned in the document?"
-    answer_question(user_query, pdf_file_path)
+    answer_question(user_query)
