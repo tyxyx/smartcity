@@ -97,19 +97,25 @@
               </div>
             </div>
 
-            <div>
+            <div id="chatbox">
               <!--insert chat here -->
             </div>
 
             <div id="formContainer" class="input-group mb-3 fixed-bottom">
               <!-- input message here -->
               <input
+                id="user-input"
                 type="text"
                 class="form-control"
                 aria-describedby="button-addon2"
                 placeholder="Enter a message..."
               />
-              <button class="btn btn-primary" type="button" id="button-addon2">
+              <button
+                id="send-button"
+                class="btn btn-primary"
+                type="button"
+                id="button-addon2"
+              >
                 Send
               </button>
             </div>
@@ -142,6 +148,54 @@
       // Animation for page load from index.html
       window.addEventListener("load", () => {
         gsap.from("body", { opacity: 0, duration: 0.5, ease: "power2.out" });
+      });
+    </script>
+
+    <script>
+      // Select the required elements
+      var chatInput = document.getElementById("user-input");
+      var sendChatBtn = document.getElementById("send-button");
+      var chatbox = document.getElementById("chatbox");
+
+      // Function to create a chat message (either user or bot)
+      function createChatLi(message, className) {
+        var chatLi = document.createElement("li");
+        chatLi.classList.add("chat", className);
+        var chatContent = `<p>${message}</p>`;
+        chatLi.innerHTML = chatContent;
+        return chatLi;
+      }
+
+      // Function to handle the chat interaction
+      function handleChat() {
+        var userMessage = chatInput.value.trim();
+        if (!userMessage) {
+          return; // Don't send if input is empty
+        }
+
+        // Append user message (right-aligned)
+        chatbox.appendChild(createChatLi(userMessage, "chat-outgoing"));
+        chatbox.scrollTo(0, chatbox.scrollHeight);
+
+        // Clear input field after sending the message
+        chatInput.value = "";
+
+        // Simulate the "Thinking..." response after a short delay
+        setTimeout(function () {
+          var thinkingMessage = createChatLi("Thinking...", "chat-incoming");
+          chatbox.appendChild(thinkingMessage);
+          chatbox.scrollTo(0, chatbox.scrollHeight);
+        }, 600);
+      }
+
+      // Add event listener for the Send button click
+      sendChatBtn.addEventListener("click", handleChat);
+
+      // Add event listener for the Enter key press
+      chatInput.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+          handleChat();
+        }
       });
     </script>
   </body>
