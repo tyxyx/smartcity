@@ -3,15 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
       href="./img/favicon-32x32.png"
     />
-
-    <title>Ollama</title>
+    <title>Ollama ChatBot</title>
 
     <!-- Bootstrap CSS -->
     <link
@@ -23,6 +21,74 @@
 
     <!-- Custom CSS -->
     <style>
+      #chatbox {
+        height: 60vh;
+        overflow-y: auto;
+        list-style-type: none;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      @media (max-height: 375px) {
+        #chatbox {
+          height: 60vh; /* Adjust height when the viewport is less than 375px */
+        }
+      }
+
+      #chatbox::-webkit-scrollbar {
+        width: 0px;
+      }
+
+      .chat-outgoing {
+        background-color: rgba(182, 180, 180, 0.171);
+        border-radius: 20px;
+        max-width: 70%;
+        margin-left: auto;
+        display: block;
+        font-size: 16px;
+        word-wrap: break-word;
+        text-align: right;
+      }
+
+      .chat-outgoing p,
+      .chat-incoming p {
+        margin: 0;
+        padding: 10px 15px;
+      }
+
+      .chat-incoming {
+        max-width: 70%;
+        margin-right: auto;
+        display: block;
+        font-size: 16px;
+        word-wrap: break-word;
+        text-align: left;
+      }
+
+      .chat-outgoing::after,
+      .chat-incoming::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+      }
+
+      .chat-outgoing::after {
+        right: -10px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      .chat-incoming::after {
+        left: -10px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
       .site-header {
         position: fixed;
         top: 0;
@@ -41,7 +107,7 @@
       }
 
       .container-wrapper {
-        max-width: 800px;
+        max-width: 100%;
         margin: 6rem auto;
         padding: 2rem;
       }
@@ -59,15 +125,33 @@
       }
 
       #formContainer {
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 15px;
+        background: rgb(255, 255, 255);
         padding: 2rem;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Adjusting button style */
+      .btn {
+        width: 100px;
+        margin-left: 10px;
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+      }
+
+      #user-input {
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+        padding: 10px;
+      }
+
+      #user-input:focus {
+        border: 1px solid black;
+        box-shadow: none;
       }
     </style>
   </head>
 
-  <body class="body-fixed">
+  <body>
     <!-- Header section matching index.html -->
     <header class="site-header">
       <div class="container">
@@ -82,9 +166,9 @@
         </div>
       </div>
     </header>
-    <!-- header ends  -->
+    <!-- header ends -->
 
-    <!-- Rest of your login form content -->
+    <!-- Chatbox content -->
     <div id="viewport">
       <div id="js-scroll-content">
         <div class="container-wrapper">
@@ -97,13 +181,12 @@
               </div>
             </div>
 
-            <div id="chatbox">
-              <!--insert chat here -->
-              <i class="bi bi-chat-right-fill"></i>
-            </div>
+            <ul id="chatbox">
+              <!-- Chat messages will appear here -->
+            </ul>
 
-            <div id="formContainer" class="input-group mb-3 fixed-bottom">
-              <!-- input message here -->
+            <div id="formContainer" class="input-group fixed-bottom">
+              <!-- User input field and send button -->
               <input
                 id="user-input"
                 type="text"
@@ -125,10 +208,10 @@
       </div>
     </div>
 
-    <!-- scripts -->
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
-    <script type="module" src="./app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
       // Initial page load animation
       gsap.from(".user-type-container", {
@@ -138,6 +221,7 @@
         ease: "power3.out",
         delay: 0.3,
       });
+
       gsap.from("#formContainer", {
         opacity: 0,
         y: 50,
@@ -150,13 +234,12 @@
       window.addEventListener("load", () => {
         gsap.from("body", { opacity: 0, duration: 0.5, ease: "power2.out" });
       });
-    </script>
 
-    <script>
-      // Select the required elements
       var chatInput = document.getElementById("user-input");
       var sendChatBtn = document.getElementById("send-button");
       var chatbox = document.getElementById("chatbox");
+
+      var isThinking = false;
 
       // Function to create a chat message (either user or bot)
       function createChatLi(message, className) {
@@ -171,12 +254,20 @@
       function handleChat() {
         var userMessage = chatInput.value.trim();
         if (!userMessage) {
+          alert("Please provide a valid input.");
           return; // Don't send if input is empty
         }
 
+        // If the bot is thinking, return early to prevent sending
+        if (isThinking) return;
+
+        // Disable send button and input field when thinking
+        sendChatBtn.disabled = true;
+        chatInput.disabled = true;
+
         // Append user message (right-aligned)
         chatbox.appendChild(createChatLi(userMessage, "chat-outgoing"));
-        chatbox.scrollTo(0, chatbox.scrollHeight);
+        scrollToBottom();
 
         // Clear input field after sending the message
         chatInput.value = "";
@@ -185,6 +276,10 @@
         var thinkingMessage = createChatLi("Thinking...", "chat-incoming");
         chatbox.appendChild(thinkingMessage);
         chatbox.scrollTo(0, chatbox.scrollHeight);
+      }
+
+      function scrollToBottom() {
+        chatbox.scrollTop = chatbox.scrollHeight;
       }
 
       // Add event listener for the Send button click
