@@ -4,14 +4,14 @@ import chromadb
 import re
 from ollama import chat
 from ollama import ChatResponse
-
-OLLAMA_MODEL = "u1i/sea-lion"
+OLLAMA_MODEL = "aisingapore/llama3-8b-cpt-sea-lionv2-instruct"
 
 # def clear_chromadb():
 #     client = chromadb.PersistentClient(path="/path/to/save/to")
 #     client.delete_collection(name="my_collection")
 
 # clear_chromadb()
+
 # Function to query Ollama model for responses
 def query_ollama(prompt):
     try:

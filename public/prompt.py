@@ -5,8 +5,7 @@ import re
 from ollama import chat
 from ollama import ChatResponse
 
-OLLAMA_MODEL = "u1i/sea-lion"
-
+OLLAMA_MODEL = "aisingapore/llama3-8b-cpt-sea-lionv2-instruct"
 # Function to query Ollama model for responses
 def query_ollama(prompt):
     try:
@@ -48,7 +47,8 @@ def query_chromadb(query, top_n=5):
     return combined_documents
 # Function to generate the response from the LLaMA model
 def generate_response_from_context(context, query):
-    prompt = f"You are an AI chatbot designed to help users suggest relevant/enhance current policies. Based on the following context, context:\n\n{context}\n\n, and the suggestion:\n\n{query}\n\n, Answer if there is already an existing policy and provide more details, or help the user further improve his suggestion, otherwise if the policy sounds feasible and reasonably good, tell the user to reach out to reach.sg to offer their suggestion to the government. "
+    prompt = f"You are an AI assistant designed to help users identify relevant policies or improve their suggested policies. If the user asks about an existing policy, your first step is to provide them with a summary of any relevant, existing policies that align with their inquiry.Context:\n\n{context}\n\n, If no policy exists or if the existing policy doesn't fully meet the user's needs, you will guide them through refining and improving their suggested policy by asking clarifying questions and offering suggestions.Your goal is to help the user develop a policy suggestion that is clear, actionable, and well-structured. Once the policy is in a reasonable form, inform the user that they can go to reach.sg to submit their suggestion. Aim to provide useful information and actionable steps. If at any time you are unsure about a policy or its details, ask the user for more specifics. User Suggestion:\n\n{query}\n\n, give your answer in the context where you are directly talking to the user as an AI chatbot"
+
     return query_ollama(prompt)
 
 def answer_question(query):
@@ -65,5 +65,5 @@ def answer_question(query):
 
 # Main function to prompt the AI with a query
 if __name__ == "__main__":
-    user_query = "I think that sg should implement some data protection policies to prevent business from stealing/misusing other people's data"
+    user_query = "I think Singapore should implement some data protection policies to prevent business from stealing/misusing other people's data"
     answer_question(user_query)
