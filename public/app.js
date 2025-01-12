@@ -1,8 +1,10 @@
 const axios = require("axios");
 const fs = require("fs");
 const pdf = require("pdf-parse");
+
 const { ChromaClient } = require("chromadb");
 const ollamaModel = "llama3.2";
+
 
 //To query ollama
 async function queryOllama(prompt) {
@@ -73,6 +75,7 @@ function chunkText(text, maxChunkSize = 300) {
     }
   });
 
+
   if (currentChunk) {
     chunks.push(currentChunk.trim());
   }
@@ -82,6 +85,7 @@ function chunkText(text, maxChunkSize = 300) {
 
 //Main
 (async () => {
+
   const client = new ChromaClient();
   let collection = await client.getOrCreateCollection({
     name: "my_collection",
@@ -119,3 +123,4 @@ function chunkText(text, maxChunkSize = 300) {
 // const response = await queryOllama(prompt);
 // const embed = await generateEmbed(prompt);
 // console.log("Response from Ollama:", response);
+

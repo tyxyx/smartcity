@@ -154,6 +154,7 @@
       }
     </style>
   </head>
+
   <body>
     <!-- Header section matching index.html -->
     <header class="site-header">
@@ -213,12 +214,14 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
       function initializeChat() {
         const initialMessage =
           "Have ideas to improve Singapore’s policies or initiatives? 🌟 Share your thoughts or ask questions—let’s brainstorm for a better future!";
 
         const initialMessageLi = createChatLi(initialMessage, "chat-incoming");
+
         initialMessageLi.style.opacity = 0;
         initialMessageLi.style.transform = "translateY(50px)";
 
@@ -227,7 +230,9 @@
 
         gsap.to(initialMessageLi, {
           opacity: 1,
+
           y: 0,
+
           duration: 1,
           ease: "power3.out",
           delay: 1.5,
@@ -264,6 +269,7 @@
       var isThinking = false;
 
       let conversationHistory = [];
+
       // Function to create a chat message (either user or bot)
       function createChatLi(message, className) {
         var chatLi = document.createElement("li");
@@ -289,6 +295,7 @@
         sendChatBtn.disabled = true;
         chatInput.disabled = true;
 
+
         // Append user message (right-aligned)
         chatbox.appendChild(createChatLi(userMessage, "chat-outgoing"));
         scrollToBottom();
@@ -301,6 +308,8 @@
         var thinkingMessage = createChatLi("Thinking...", "chat-incoming");
         chatbox.appendChild(thinkingMessage);
         scrollToBottom();
+
+
 
         // Send AJAX request to backend
         fetch("http://localhost:5000/chat", {
