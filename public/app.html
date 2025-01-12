@@ -212,7 +212,6 @@
       </div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -222,15 +221,18 @@
           "Have ideas to improve Singapore’s policies or initiatives? 🌟 Share your thoughts or ask questions—let’s brainstorm for a better future!";
 
         const initialMessageLi = createChatLi(initialMessage, "chat-incoming");
-        initialMessageLi.style.opacity = 0; 
-        initialMessageLi.style.transform = "translateY(50px)"; 
+
+        initialMessageLi.style.opacity = 0;
+        initialMessageLi.style.transform = "translateY(50px)";
 
         chatbox.appendChild(initialMessageLi);
         scrollToBottom();
 
         gsap.to(initialMessageLi, {
           opacity: 1,
-          y: 0, 
+
+          y: 0,
+
           duration: 1,
           ease: "power3.out",
           delay: 1.5,
@@ -266,6 +268,8 @@
 
       var isThinking = false;
 
+      let conversationHistory = [];
+
       // Function to create a chat message (either user or bot)
       function createChatLi(message, className) {
         var chatLi = document.createElement("li");
@@ -285,11 +289,12 @@
 
         // uncomment to block input when waiting for AI respond
         // // If the bot is thinking, return early to prevent sending
-        // if (isThinking) return;
+        if (isThinking) return;
 
         // // Disable send button and input field when thinking
-        // sendChatBtn.disabled = true;
-        // chatInput.disabled = true;
+        sendChatBtn.disabled = true;
+        chatInput.disabled = true;
+
 
         // Append user message (right-aligned)
         chatbox.appendChild(createChatLi(userMessage, "chat-outgoing"));
@@ -303,6 +308,27 @@
         var thinkingMessage = createChatLi("Thinking...", "chat-incoming");
         chatbox.appendChild(thinkingMessage);
         scrollToBottom();
+
+
+
+        // Send AJAX request to backend
+        fetch("http://localhost:5000/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: userMessage,
+            history: conversationHistory,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Display AI's response
+            thinkingMessage.textContent = data.response;
+            conversationHistory = data.history; // Update conversation history
+          })
+          .catch((error) => console.error("Error:", error));
 
         sendChatBtn.disabled = false;
         chatInput.disabled = false;

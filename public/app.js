@@ -2,7 +2,9 @@ const axios = require("axios");
 const fs = require("fs");
 const pdf = require("pdf-parse");
 
-const ollamaModel = "granite3.1-dense:8b";
+const { ChromaClient } = require("chromadb");
+const ollamaModel = "llama3.2";
+
 
 //To query ollama
 async function queryOllama(prompt) {
@@ -73,6 +75,7 @@ function chunkText(text, maxChunkSize = 300) {
     }
   });
 
+
   if (currentChunk) {
     chunks.push(currentChunk.trim());
   }
@@ -82,19 +85,42 @@ function chunkText(text, maxChunkSize = 300) {
 
 //Main
 (async () => {
-  const filePath = "./public/doc/government-data-security-policies.pdf";
+
+  const client = new ChromaClient();
+  let collection = await client.getOrCreateCollection({
+    name: "my_collection",
+  });
+  await client.deleteCollection(collection);
+  collection = await client.getOrCreateCollection({
+    name: "my_collection",
+  });
+
+  const filePath = "./doc/government-data-security-policies.pdf";
   const text = await convertPDFToText(filePath);
 
   const chunks = chunkText(text);
-  const embeddings = [];
-  for (const chunk of chunks) {
+  for (let index = 0; index < chunks.length; index++) {
+    const chunk = chunks[index];
     const embedding = await generateEmbed(chunk);
-    embeddings.push({ chunk, embedding });
-  }
-  console.log("Embeddings: ", embeddings);
+    const embeddingVector = embedding.embeddings;
+    const metadata = {
+      id: `chunk_${index}`,
+      content: chunk,
+    };
+    //odd, it says its undefined but when i manually check theres no undefined
+    await collection.add({
+      embedding: embeddingVector[0],
+      document: chunk,
+      metadata: metadata,
+    });
 
-  const prompt = "What is the capital of France?";
-  const response = await queryOllama(prompt);
-  const embed = await generateEmbed(prompt);
-  console.log("Response from Ollama:", response);
+    console.log(`Added chunk ${index + 1} with embedding to ChromaDB.`);
+  }
+
+  console.log("All embeddings have been added to ChromaDB.");
 })();
+// const prompt = "What is the capital of France?";
+// const response = await queryOllama(prompt);
+// const embed = await generateEmbed(prompt);
+// console.log("Response from Ollama:", response);
+
