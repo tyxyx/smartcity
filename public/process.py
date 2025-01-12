@@ -2,6 +2,7 @@ import requests
 import PyPDF2
 import chromadb
 import re
+import os
 from ollama import chat
 from ollama import ChatResponse
 OLLAMA_MODEL = "aisingapore/llama3-8b-cpt-sea-lionv2-instruct"
@@ -103,28 +104,35 @@ def store_embeddings_in_chromadb(embedded_chunks):
         print(f"Added chunk {index + 1} with embedding to ChromaDB.")
 
 # Main function to process PDF and generate embeddings
-def process_pdf(file_path):
-    text = convert_pdf_to_text(file_path)
-    chunks = chunk_text(text)
-
+def process_chunk(chunks):
     embedded_chunks = []
-
     for index, chunk in enumerate(chunks):
         embedding = generate_embed(chunk)
         if embedding and "embeddings" in embedding:
             embedded_chunks.append({
                 "document": chunk,
-                "embedding": embedding["embeddings"][0]  # Assuming the response is an array
+                "embedding": embedding["embeddings"]  # Assuming the response is an array
             })
             print(f"Embedding for chunk {index + 1} generated.")
     
     store_embeddings_in_chromadb(embedded_chunks)
     print("All embeddings have been added to ChromaDB.")
 
-
+def process_all_pdf(folder_path, firstFile = True):
+    chunks = []
+    for file in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, file)  # Get the full file path
+        if file.lower().endswith('.pdf'):
+            text = convert_pdf_to_text(file_path)
+            if firstFile:
+                chunks = chunk_text(text)
+                firstFile = False
+            else:
+                chunks += chunk_text(text)
+    process_chunk(chunks)
 
 # Run the process on a sample PDF
 if __name__ == "__main__":
-    pdf_file_path = './doc/government-data-security-policies.pdf'
-    process_pdf(pdf_file_path)
+    pdf_file_path = './doc'
+    process_all_pdf(pdf_file_path)
     
