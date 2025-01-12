@@ -5,11 +5,11 @@ import re
 import os
 OLLAMA_MODEL = "aisingapore/llama3-8b-cpt-sea-lionv2-instruct"
 
-# def clear_chromadb():
-#     client = chromadb.PersistentClient(path="/path/to/save/to")
-#     client.delete_collection(name="my_collection")
+def clear_chromadb():
+    client = chromadb.PersistentClient(path="/path/to/save/to")
+    client.delete_collection(name="my_collection")
 
-# clear_chromadb()
+clear_chromadb()
 
 # Function to generate embedding using Ollama model
 def generate_embed(input_text):
