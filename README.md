@@ -49,6 +49,10 @@ Finally, open the `app.html` file in your browser to access the web application.
 - Ensure that your environment is properly set up for the required dependencies and models.
 - If you encounter any issues or need further assistance, please open an issue on this repository.
 
-## License
+## Contributors
 
-This project is licensed under the [MIT License](LICENSE).
+Tan Yuan Xing
+Chan Yun Wen
+Teo Xin Yi
+Stephanie Lim
+Nicholas Seah
