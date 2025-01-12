@@ -49,6 +49,16 @@ Finally, open the `app.html` file in your browser to access the web application.
 - Ensure that your environment is properly set up for the required dependencies and models.
 - If you encounter any issues or need further assistance, please open an issue on this repository.
 
+## Future Improvements
+- Graph and Statistical Data Parsing
+To enhance the chatbot’s capabilities, we aim to integrate Optical Character Recognition (OCR) and data extraction techniques to interpret and process visual data, such as graphs and charts
+
+- Reranking
+To improve the relevance and quality of responses, we plan to implement a reranking mechanism. Currently, the chatbot retrieves the top results based on similarity scores from the vector database. However, these results may not always align perfectly with the user's query intent
+
+- Dynamic Chunking
+We should implement dynamic chunking based on the complexity of the input data, optimizing performance further
+
 ## Contributors
 
 - Tan Yuan Xing 
