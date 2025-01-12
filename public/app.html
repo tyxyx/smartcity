@@ -21,9 +21,8 @@
 
     <!-- Custom CSS -->
     <style>
-
       #chatbox {
-        height: 60vh; 
+        height: 60vh;
         overflow-y: auto;
         list-style-type: none;
         padding: 10px;
@@ -53,7 +52,8 @@
         text-align: right;
       }
 
-      .chat-outgoing p, .chat-incoming p {
+      .chat-outgoing p,
+      .chat-incoming p {
         margin: 0;
         padding: 10px 15px;
       }
@@ -67,7 +67,8 @@
         text-align: left;
       }
 
-      .chat-outgoing::after, .chat-incoming::after {
+      .chat-outgoing::after,
+      .chat-incoming::after {
         content: "";
         position: absolute;
         width: 0;
@@ -147,7 +148,6 @@
         border: 1px solid black;
         box-shadow: none;
       }
-
     </style>
   </head>
 
@@ -258,12 +258,13 @@
           return; // Don't send if input is empty
         }
 
-        // If the bot is thinking, return early to prevent sending
-        if (isThinking) return;
+        // uncomment to block input when waiting for AI respond
+        // // If the bot is thinking, return early to prevent sending
+        // if (isThinking) return;
 
-        // Disable send button and input field when thinking
-        sendChatBtn.disabled = true;
-        chatInput.disabled = true;
+        // // Disable send button and input field when thinking
+        // sendChatBtn.disabled = true;
+        // chatInput.disabled = true;
 
         // Append user message (right-aligned)
         chatbox.appendChild(createChatLi(userMessage, "chat-outgoing"));
@@ -274,17 +275,15 @@
 
         // Simulate the "Thinking..." response after a short delay
         isThinking = true;
-        setTimeout(function () {
-          var thinkingMessage = createChatLi("Thinking...", "chat-incoming");
-          chatbox.appendChild(thinkingMessage);
-          scrollToBottom();
+        var thinkingMessage = createChatLi("Thinking...", "chat-incoming");
+        chatbox.appendChild(thinkingMessage);
+        scrollToBottom();
 
-          sendChatBtn.disabled = false;
-          chatInput.disabled = false;
+        sendChatBtn.disabled = false;
+        chatInput.disabled = false;
 
-          isThinking = false;
-          chatInput.focus();
-        }, 600);
+        isThinking = false;
+        chatInput.focus();
       }
 
       function scrollToBottom() {
