@@ -6,37 +6,37 @@ This repository contains the code for the SMU Smart City GenAI Hackathon project
 ## 1. Installing Dependencies
 
 Before you begin, install the necessary Python dependencies. Run the following commands:
-
+```bash
 pip install ollama  
 pip install flask  
 pip install flask_cors  
 pip install chromadb  
 pip install requests  
-
+```
 ## 2. Downloading Ollama Models
 
 You need to download the required Ollama model. Use the following command:
-
+```bash
 ollama pull aisingapore/llama3-8b-cpt-sea-lionv2-instruct  
-
+```
 ## 3. Starting Ollama Server
 
 Start the Ollama server with the following command:
-
+```bash
 ollama serve  
-
+```
 ## 4. Storing Embeddings in ChromaDB
 
 Run the script to store embeddings in ChromaDB:
-
+```bash
 python process.py  
-
+```
 ## 5. Starting Flask Server
 
 Next, start the Flask server to serve the application:
-
+```bash
 python prompt.py  
-
+```
 ## 6. Open the Webpage
 
 Finally, open the `app.html` file in your browser to access the web application.
