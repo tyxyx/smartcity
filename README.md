@@ -28,6 +28,7 @@ ollama serve
 ## 4. Storing Embeddings in ChromaDB
 
 Run the script to store embeddings in ChromaDB:
+The current dataset generates 213 chunks
 ```bash
 python process.py  
 ```
