@@ -3,8 +3,6 @@ import PyPDF2
 import chromadb
 import re
 import os
-from ollama import chat
-from ollama import ChatResponse
 OLLAMA_MODEL = "aisingapore/llama3-8b-cpt-sea-lionv2-instruct"
 
 # def clear_chromadb():
@@ -12,25 +10,6 @@ OLLAMA_MODEL = "aisingapore/llama3-8b-cpt-sea-lionv2-instruct"
 #     client.delete_collection(name="my_collection")
 
 # clear_chromadb()
-
-# Function to query Ollama model for responses
-def query_ollama(prompt):
-    try:
-        
-        response: ChatResponse = chat(model=OLLAMA_MODEL, messages=[
-            {
-                'role': 'user',
-                'content': prompt,
-            },
-])
-        response=response.message.content
-        
-        return response
-
-    except Exception as e:
-        print(f"Error querying Ollama: {e}")
-        return None
-
 
 # Function to generate embedding using Ollama model
 def generate_embed(input_text):
@@ -109,9 +88,10 @@ def process_chunk(chunks):
     for index, chunk in enumerate(chunks):
         embedding = generate_embed(chunk)
         if embedding and "embeddings" in embedding:
+            print(embedding["embeddings"][0])
             embedded_chunks.append({
                 "document": chunk,
-                "embedding": embedding["embeddings"]  # Assuming the response is an array
+                "embedding": embedding["embeddings"][0]  # Assuming the response is an array
             })
             print(f"Embedding for chunk {index + 1} generated.")
     
