@@ -51,8 +51,8 @@ Finally, open the `app.html` file in your browser to access the web application.
 
 ## Contributors
 
-Tan Yuan Xing
-Chan Yun Wen
-Teo Xin Yi
-Stephanie Lim
-Nicholas Seah
+- Tan Yuan Xing 
+- Chan Yun Wen 
+- Teo Xin Yi 
+- Stephanie Lim 
+- Nicholas Seah 
