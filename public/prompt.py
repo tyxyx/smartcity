@@ -1,5 +1,6 @@
 import requests
 import chromadb
+import ollama
 from ollama import chat
 from ollama import ChatResponse
 from flask import Flask, request, jsonify
@@ -11,7 +12,8 @@ OLLAMA_MODEL = "aisingapore/llama3-8b-cpt-sea-lionv2-instruct"
 # Function to query Ollama model for responses
 def query_ollama(messages):
     try:
-        response: ChatResponse = chat(model=OLLAMA_MODEL, messages=messages)
+        # response: ChatResponse = chat(model=OLLAMA_MODEL, messages=messages)
+        response = ollama.chat(model=OLLAMA_MODEL, messages=messages)
         return response.message.content
     except Exception as e:
         print(f"Error querying Ollama: {e}")
