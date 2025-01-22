@@ -13,12 +13,13 @@ pip install flask_cors
 pip install chromadb  
 pip install requests  
 ```
-## 2. Downloading Ollama Models
+## 2. Downloading Ollama and Models
 
-You need to download the required Ollama model. Use the following command:
+You need to download Ollama on the official website and the required Ollama model. Use the following command:
 ```bash
 ollama pull aisingapore/llama3-8b-cpt-sea-lionv2-instruct  
 ```
+https://ollama.com/
 ## 3. Starting Ollama Server
 
 Start the Ollama server with the following command:
