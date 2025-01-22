@@ -12,6 +12,7 @@ pip install flask
 pip install flask_cors  
 pip install chromadb  
 pip install requests  
+pip install pypdf2
 ```
 ## 2. Downloading Ollama and Models
 
